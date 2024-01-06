@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body style="margin: 0">
+    <form onsubmit="handleFormSubmit(event)">
+      <label for="todo">To-do</label>
+      <input type="text" name="todo" id="todo" />
+      <label for="des">To-do Description</label>
+      <input type="text" name="des" id="tododes" />
+      <button type="submit">Add To-do</button>
+    </form>
+    <ul id="remainingToDo">Remaining To-do</ul>
+    <br><br>
+    <ul id="completedToDo">Completed To-do</ul>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.4/axios.min.js"></script>
+  
+  
+  
+  <script>
+ 
+    function handleFormSubmit(event){
+    event.preventDefault();
+    const todo = event.target.todo.value;
+    const tododes = event.target.tododes.value;
+  
+    const userDetails={
+        todo,
+        tododes,
+        isDone:''
+    };
+
+    axios
+  .post('https://crudcrud.com/api/d02ed69d0a5847d0ad79302cde5ed428/todo',userDetails)
+  .then(res=>{
+    showUserOnScreen(res.data);
+    resetForm();
+    })
+  .catch(err=>console.error(err));
+  
+
+  }
+
+    window.addEventListener("DOMContentLoaded",()=>{
+    axios
+    .get('https://crudcrud.com/api/d02ed69d0a5847d0ad79302cde5ed428/todo')
+    .then(res=>{
+        for(let i=0;i<res.data.length;i++){
+            if(res.data[i].isDone=='true') showCompletedUserOnScreen(res.data[i]);
+            else showUserOnScreen(res.data[i]);
+            
+        }
+    })
+    .catch(err=>console.error(err));
+  
+  });
+ 
+  function showUserOnScreen (userDetails){
+    const parentElem = document.getElementById('remainingToDo');
+    const childElem = document.createElement('li') ;
+    childElem.textContent = userDetails.todo +" - "+ userDetails.tododes;
+    const deleteButton = document.createElement('input') ;
+    deleteButton.type = "button";
+    deleteButton.value = 'X' ;
+    deleteButton.onclick= () => {
+      const id=userDetails._id
+      axios
+      .delete(`https://crudcrud.com/api/d02ed69d0a5847d0ad79302cde5ed428/todo/${id}`)
+      .then(res=>parentElem.removeChild (childElem))
+      .catch(err=>console.error(err));
+    }
+    const okButton = document.createElement('input') ;
+    okButton.type = "button";
+    okButton.value = '🗸' ;
+    okButton.onclick= () => {
+        const id=userDetails._id
+        const todo=userDetails.todo;
+        const tododes=userDetails.tododes;
+        axios
+      .delete(`https://crudcrud.com/api/d02ed69d0a5847d0ad79302cde5ed428/todo/${id}`)
+      .then(res=>{
+        parentElem.removeChild (childElem);
+        
+        })
+      .catch(err=>console.error(err));
+
+      const modUserDetails={
+        todo,
+        tododes,
+        isDone:'true'
+      }
+
+      axios
+        .post('https://crudcrud.com/api/d02ed69d0a5847d0ad79302cde5ed428/todo',modUserDetails)
+        .then(res=>{
+        showCompletedUserOnScreen(modUserDetails);
+    
+        })
+        .catch(err=>console.error(err));
+
+    
+    }
+    childElem.appendChild(okButton);
+    childElem.appendChild(deleteButton);
+    parentElem.appendChild(childElem);
+    
+   
+    }
+    function showCompletedUserOnScreen(userDetails) {
+      const completedParentElem = document.getElementById('completedToDo');
+      const completedChildElem = document.createElement('li');
+      completedChildElem.textContent = userDetails.todo + " - " + userDetails.tododes;
+
+      const deleteButton = document.createElement('input');
+      deleteButton.type = "button";
+      deleteButton.value = 'X';
+      deleteButton.onclick = () => {
+        const id = userDetails._id;
+        axios
+          .delete(`https://crudcrud.com/api/d02ed69d0a5847d0ad79302cde5ed428/todo/${id}`)
+          .then(res => completedParentElem.removeChild(completedChildElem))
+          .catch(err => console.error(err));
+      };
+
+      completedChildElem.appendChild(deleteButton);
+      completedParentElem.appendChild(completedChildElem);
+    }
+    function resetForm(){
+        document.getElementById("todo").value = "";
+        document.getElementById("tododes").value = "";
+
+    }
+
+  </script>
+</html>
+
