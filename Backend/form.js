@@ -18,7 +18,7 @@ const method=req.method;
         });
         return req.on('end',()=>{
             const parsed=Buffer.concat(body).toString();
-            const mes=parsed.split('=')[1];
+            const mes=parsed.split('=')[0];
             fs.writeFile('message.txt',mes,err=>{
             res.statusCode=302;
             res.setHeader("Location","/");
@@ -34,4 +34,4 @@ const method=req.method;
     
 
 });
-server.listen(4000);
+server.listen(3000); 

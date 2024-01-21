@@ -9,7 +9,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\Backend\\exporting\\app.js",
+            "program": "${workspaceFolder}\\Backend\\expressStart\\app.js",
             "restart": true,
             "runtimeExecutable": "nodemon",
             "console": "integratedTerminal"
